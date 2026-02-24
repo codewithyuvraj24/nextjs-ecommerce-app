@@ -1,8 +1,15 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 const { createUser, findUserByEmail } = require('../models/userModel');
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
+    // 1. Check for input validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     const { name, email, password } = req.body;
 
     try {
@@ -32,12 +39,17 @@ const register = async (req, res) => {
             },
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        next(err);
     }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
+    // 1. Check for input validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     const { email, password } = req.body;
 
     try {
@@ -67,8 +79,7 @@ const login = async (req, res) => {
             },
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        next(err);
     }
 };
 

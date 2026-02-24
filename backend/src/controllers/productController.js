@@ -1,16 +1,26 @@
 const productModel = require('../models/productModel');
 
-const getProducts = async (req, res) => {
+const getProducts = async (req, res, next) => {
     try {
-        const products = await productModel.getAllProducts();
-        res.json(products);
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 12;
+        const offset = (page - 1) * limit;
+
+        const data = await productModel.getAllProducts(limit, offset);
+
+        res.json({
+            products: data.products,
+            total: data.total,
+            page,
+            limit,
+            totalPages: Math.ceil(data.total / limit)
+        });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        next(err);
     }
 };
 
-const getProduct = async (req, res) => {
+const getProduct = async (req, res, next) => {
     try {
         const product = await productModel.getProductBySlug(req.params.slug);
         if (!product) {
@@ -18,22 +28,20 @@ const getProduct = async (req, res) => {
         }
         res.json(product);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        next(err);
     }
 };
 
-const createProduct = async (req, res) => {
+const createProduct = async (req, res, next) => {
     try {
         const newProduct = await productModel.createProduct(req.body);
         res.status(201).json(newProduct);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        next(err);
     }
 };
 
-const updateProduct = async (req, res) => {
+const updateProduct = async (req, res, next) => {
     try {
         const updatedProduct = await productModel.updateProduct(req.params.id, req.body);
         if (!updatedProduct) {
@@ -41,12 +49,11 @@ const updateProduct = async (req, res) => {
         }
         res.json(updatedProduct);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        next(err);
     }
 };
 
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res, next) => {
     try {
         const result = await productModel.deleteProduct(req.params.id);
         if (!result) {
@@ -54,8 +61,7 @@ const deleteProduct = async (req, res) => {
         }
         res.json({ message: 'Product removed' });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        next(err);
     }
 };
 

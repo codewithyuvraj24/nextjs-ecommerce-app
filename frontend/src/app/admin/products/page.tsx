@@ -11,7 +11,7 @@ export default function AdminProductsPage() {
 
     useEffect(() => {
         api.get("/products")
-            .then(res => setProducts(res.data))
+            .then(res => setProducts(res.data.products || []))
             .catch(err => console.error(err))
     }, [])
 
