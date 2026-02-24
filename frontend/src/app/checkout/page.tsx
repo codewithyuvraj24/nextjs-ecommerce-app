@@ -12,6 +12,7 @@ import {
     Loader2, Lock, Sparkles, ChevronRight, Check, CreditCard, Banknote,
     Smartphone, ArrowLeft, Package
 } from "lucide-react"
+import Script from "next/script"
 
 const STEPS = [
     { id: 1, label: "Shipping" },
@@ -74,16 +75,70 @@ export default function CheckoutPage() {
     const handlePlaceOrder = async () => {
         setLoading(true)
         try {
-            const orderStatus = paymentMethod === "cod" ? "pending" : "paid"
-            await api.post("/orders", {
-                totalAmount: totalPrice(),
-                shippingAddress: address,
-                status: orderStatus,
-                items: items.map(i => ({ product_id: i.id, product_name: i.name, quantity: i.quantity, price: i.price }))
-            });
+            const totalAmt = totalPrice() + (paymentMethod === "cod" ? 50 : 0)
+            const orderItems = items.map(i => ({ product_id: i.id, product_name: i.name, quantity: i.quantity, price: i.price }))
 
-            clearCart();
-            router.push(`/dashboard`);
+            if (paymentMethod === "cod") {
+                await api.post("/orders", {
+                    totalAmount: totalAmt,
+                    shippingAddress: address,
+                    status: "pending",
+                    items: orderItems
+                });
+                clearCart();
+                router.push(`/checkout/success`);
+            } else {
+                // Online Payment Flow
+                // 1. Create order on backend
+                const { data: orderData } = await api.post("/payment/create-order", {
+                    amount: totalAmt,
+                    currency: "INR"
+                });
+
+                // 2. Initialize Razorpay options
+                const options = {
+                    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                    amount: orderData.amount,
+                    currency: orderData.currency,
+                    name: "Glow & Co.",
+                    description: "Order Payment",
+                    order_id: orderData.id,
+                    handler: async function (response: any) {
+                        try {
+                            // 3. Verify payment on backend
+                            await api.post("/payment/verify", {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                items: orderItems,
+                                shippingAddress: address,
+                                totalAmount: totalAmt
+                            });
+
+                            clearCart();
+                            router.push(`/checkout/success`);
+                        } catch (err) {
+                            console.error("Payment verification failed", err);
+                            alert("Payment verification failed. Please contact support.");
+                        }
+                    },
+                    prefill: {
+                        name: user?.name || "Customer",
+                        email: user?.email || "",
+                        contact: "9999999999"
+                    },
+                    theme: {
+                        color: "#c9a87c" // rose-gold
+                    }
+                };
+
+                const rzp1 = new (window as any).Razorpay(options);
+                rzp1.on('payment.failed', function (response: any) {
+                    console.error("Payment Failed", response.error);
+                    alert("Payment Failed. Reason: " + response.error.description);
+                });
+                rzp1.open();
+            }
         } catch (err) {
             console.error(err);
             alert("Order creation failed. Please try again.");
@@ -123,6 +178,8 @@ export default function CheckoutPage() {
 
     return (
         <div className="min-h-screen bg-[var(--soft-gray)]">
+            <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+
             {/* Progress Stepper */}
             <div className="bg-white border-b border-[var(--border)]">
                 <div className="container mx-auto px-4 lg:px-8 py-4">

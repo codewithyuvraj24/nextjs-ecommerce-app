@@ -27,30 +27,31 @@ const createOrder = async (req, res) => {
 };
 
 const verifyPayment = async (req, res) => {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, order_id } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, items, shippingAddress, totalAmount } = req.body;
 
     try {
         const body = razorpay_order_id + '|' + razorpay_payment_id;
+        // Use RAZORPAY_KEY_SECRET if available, otherwise fallback to RAZORPAY_SECRET (from plan)
+        const secret = process.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_SECRET;
+
         const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .createHmac('sha256', secret)
             .update(body.toString())
             .digest('hex');
 
         if (expectedSignature === razorpay_signature) {
             // Payment verified
-            // Update order status in DB
-            console.log(`Payment verified for order ${order_id}`);
+            console.log(`Payment verified for Razorpay order ${razorpay_order_id}`);
 
-            const updatedOrder = await orderModel.updateOrderStatus(order_id, 'paid', razorpay_payment_id);
+            const userId = req.user.id;
+            const newOrder = await orderModel.createOrder(userId, totalAmount, shippingAddress, items, 'paid', razorpay_payment_id);
 
-            // TODO: Trigger Shiprocket shipment creation here or via separate endpoint
-
-            res.json({ message: 'Payment verified successfully', order: updatedOrder });
+            res.json({ message: 'Payment verified successfully', order: newOrder });
         } else {
             res.status(400).json({ message: 'Invalid signature' });
         }
     } catch (err) {
-        console.error(err);
+        console.error('Error verifying payment:', err);
         res.status(500).json({ message: 'Server error' });
     }
 };

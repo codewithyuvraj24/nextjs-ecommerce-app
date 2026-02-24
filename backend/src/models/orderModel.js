@@ -1,17 +1,17 @@
 const { pool } = require('../config/db');
 
-const createOrder = async (userId, totalAmount, shippingAddress, items, status = 'pending') => {
+const createOrder = async (userId, totalAmount, shippingAddress, items, status = 'pending', paymentId = null) => {
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
 
         const orderQuery = `
-      INSERT INTO orders (user_id, total_amount, shipping_address, status)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO orders (user_id, total_amount, shipping_address, status, payment_id)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING id, created_at, status;
     `;
-        const orderResult = await client.query(orderQuery, [userId, totalAmount, shippingAddress, status]);
+        const orderResult = await client.query(orderQuery, [userId, totalAmount, shippingAddress, status, paymentId]);
         const order = orderResult.rows[0];
 
         const itemQuery = `
