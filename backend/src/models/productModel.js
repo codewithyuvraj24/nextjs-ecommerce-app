@@ -1,13 +1,49 @@
 const { pool } = require('../config/db');
 
-const getAllProducts = async (limit = 12, offset = 0) => {
-    const countResult = await pool.query('SELECT COUNT(*) FROM products');
+const getAllProducts = async ({ limit = 12, offset = 0, search, category, minPrice, maxPrice, sort }) => {
+    let whereClauses = [];
+    let values = [];
+    let queryIndex = 1;
+
+    if (category) {
+        whereClauses.push(`category = $${queryIndex++}`);
+        values.push(category);
+    }
+    if (minPrice) {
+        whereClauses.push(`price >= $${queryIndex++}`);
+        values.push(minPrice);
+    }
+    if (maxPrice) {
+        whereClauses.push(`price <= $${queryIndex++}`);
+        values.push(maxPrice);
+    }
+    if (search) {
+        whereClauses.push(`(name ILIKE $${queryIndex} OR description ILIKE $${queryIndex})`);
+        values.push(`%${search}%`);
+        queryIndex++;
+    }
+
+    const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    let orderString = 'ORDER BY created_at DESC';
+    if (sort === 'price_asc') orderString = 'ORDER BY price ASC';
+    if (sort === 'price_desc') orderString = 'ORDER BY price DESC';
+    if (sort === 'newest') orderString = 'ORDER BY created_at DESC';
+    // If sort by rating is requested, we assume products table will eventually have an avg_rating or a join.
+    // For now we leave it as newest or price.
+
+    const countQuery = `SELECT COUNT(*) FROM products ${whereString}`;
+    const countResult = await pool.query(countQuery, values);
     const total = parseInt(countResult.rows[0].count, 10);
 
-    const result = await pool.query(
-        'SELECT * FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2',
-        [limit, offset]
-    );
+    const mainQuery = `
+        SELECT * FROM products 
+        ${whereString} 
+        ${orderString} 
+        LIMIT $${queryIndex++} OFFSET $${queryIndex++}
+    `;
+
+    const result = await pool.query(mainQuery, [...values, limit, offset]);
 
     return {
         products: result.rows,

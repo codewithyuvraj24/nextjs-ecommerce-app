@@ -6,7 +6,17 @@ const getProducts = async (req, res, next) => {
         const limit = parseInt(req.query.limit, 10) || 12;
         const offset = (page - 1) * limit;
 
-        const data = await productModel.getAllProducts(limit, offset);
+        const { search, category, minPrice, maxPrice, sort } = req.query;
+
+        const data = await productModel.getAllProducts({
+            limit,
+            offset,
+            search,
+            category,
+            minPrice: minPrice ? parseFloat(minPrice) : undefined,
+            maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+            sort
+        });
 
         res.json({
             products: data.products,
