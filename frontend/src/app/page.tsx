@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { Star, Shield, Leaf, Droplets, ArrowRight, Sparkles, Heart } from "lucide-react"
+import ProductCard from "@/components/ProductCard"
 
 const FEATURED_PRODUCTS = [
   { id: 1, name: "Radiance Serum", price: 29.99, tag: "Best Seller", rating: 4.8, reviews: 124 },
@@ -143,40 +144,17 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURED_PRODUCTS.map((product) => (
-              <Card key={product.id} className="group overflow-hidden border-0 shadow-sm card-hover bg-white rounded-2xl">
-                {/* Image */}
-                <div className="relative aspect-square bg-gradient-to-br from-[var(--blush)] to-[var(--secondary)] flex items-center justify-center overflow-hidden">
-                  <div className="w-24 h-24 rounded-full bg-white/40 flex items-center justify-center">
-                    <Droplets className="h-10 w-10 text-[#c9a87c] opacity-50 group-hover:scale-110 transition-transform duration-300" />
-                  </div>
-                  {product.tag && (
-                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[var(--rose-gold)] text-white text-xs font-semibold">
-                      {product.tag}
-                    </span>
-                  )}
-                  <button aria-label="Add to wishlist" className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110">
-                    <Heart className="h-4 w-4 text-[var(--rose-gold)]" />
-                  </button>
-                </div>
-
-                <CardHeader className="p-4 pb-1">
-                  <div className="flex items-center gap-1 mb-1">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Star key={i} className={`h-3 w-3 ${i <= Math.round(product.rating) ? 'fill-[var(--rose-gold)] text-[var(--rose-gold)]' : 'text-[var(--border)]'}`} />
-                    ))}
-                    <span className="text-xs text-[var(--muted-foreground)] ml-1">({product.reviews})</span>
-                  </div>
-                  <CardTitle className="text-base font-semibold">{product.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <p className="text-lg font-bold text-[var(--rose-gold)]">${product.price}</p>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Button className="w-full rounded-full gradient-primary text-white btn-shimmer hover:shadow-md transition-all" asChild>
-                    <Link href={`/product/product-${product.id}`}>Add to Cart</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+              <ProductCard
+                key={product.id}
+                id={product.id.toString()}
+                name={product.name}
+                price={product.price}
+                image="https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
+                slug={`product-${product.id}`}
+                rating={product.rating}
+                reviews={product.reviews}
+                tag={product.tag || undefined}
+              />
             ))}
           </div>
 

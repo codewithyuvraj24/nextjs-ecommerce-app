@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import ProductCard from "@/components/ProductCard"
 import Link from "next/link"
 import { Star, Heart, SlidersHorizontal, ChevronRight, Droplets, Home, Loader2 } from "lucide-react"
 
@@ -133,34 +134,16 @@ export default function CategoryPage() {
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {products.map((product) => (
-                                    <Card key={product.id} className="group overflow-hidden border border-[var(--border)] shadow-sm card-hover rounded-2xl bg-white flex flex-col">
-                                        <div className="relative aspect-square bg-[var(--soft-gray)] flex items-center justify-center overflow-hidden shrink-0">
-                                            <div className="w-20 h-20 rounded-full bg-white/40 flex items-center justify-center relative z-10">
-                                                <Droplets className="h-8 w-8 text-[var(--rose-gold)] opacity-50 group-hover:scale-110 transition-transform duration-300" />
-                                            </div>
-                                            {product.stock <= 5 && product.stock > 0 && (
-                                                <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold z-20">
-                                                    Only {product.stock} left
-                                                </span>
-                                            )}
-                                            {product.stock === 0 && (
-                                                <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold z-20">
-                                                    Out of Stock
-                                                </span>
-                                            )}
-                                        </div>
-                                        <CardHeader className="p-4 pb-1">
-                                            <CardTitle className="text-base font-semibold line-clamp-1">{product.name}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="p-4 pt-0 grow">
-                                            <p className="text-lg font-bold text-[var(--foreground)]">${parseFloat(product.price).toFixed(2)}</p>
-                                        </CardContent>
-                                        <CardFooter className="p-4 pt-0 mt-auto">
-                                            <Button className="w-full rounded-full gradient-primary text-white btn-shimmer" asChild>
-                                                <Link href={`/product/${product.slug}`}>View Details</Link>
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
+                                    <ProductCard
+                                        key={product.id}
+                                        id={product.id}
+                                        name={product.name}
+                                        price={parseFloat(product.price)}
+                                        discountPrice={product.discount_price ? parseFloat(product.discount_price) : undefined}
+                                        image={product.images?.[0] || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be'}
+                                        slug={product.slug}
+                                        stock={product.stock}
+                                    />
                                 ))}
                             </div>
                         )}

@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { ShoppingCart, User, Menu, X, ChevronDown, Sparkles } from "lucide-react"
+import { ShoppingCart, User, Menu, X, ChevronDown, Sparkles, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCartStore } from "@/store/cartStore"
+import { useWishlistStore } from "@/store/wishlistStore"
 import { useAuthStore } from "@/store/authStore"
 import { useState, useEffect } from "react"
 
@@ -11,6 +12,7 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const items = useCartStore((s) => s.items)
+    const wishlistItems = useWishlistStore((s) => s.items)
     const { user, token } = useAuthStore()
 
     useEffect(() => {
@@ -20,6 +22,7 @@ export function Navbar() {
     }, [])
 
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
+    const wishlistCount = wishlistItems.length
 
     const navLinks = [
         { href: "/products/skin-care", label: "Skin Care" },
@@ -59,10 +62,21 @@ export function Navbar() {
 
                     {/* Right Actions */}
                     <div className="flex items-center gap-2">
-                        {/* User */}
                         <Link href={token ? "/dashboard" : "/login"}>
                             <Button variant="ghost" size="icon" className="relative rounded-full" style={{ ['--tw-bg-opacity' as any]: 1 }} >
                                 <User className="h-5 w-5" />
+                            </Button>
+                        </Link>
+
+                        {/* Wishlist */}
+                        <Link href="/wishlist">
+                            <Button variant="ghost" size="icon" className="relative rounded-full" >
+                                <Heart className="h-5 w-5" />
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-[var(--rose-gold)] text-white text-xs font-semibold flex items-center justify-center animate-scale-in">
+                                        {wishlistCount}
+                                    </span>
+                                )}
                             </Button>
                         </Link>
 

@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ShoppingCart, Star, Heart, Truck, RotateCcw, ShieldCheck, ChevronRight, Home, Minus, Plus, Droplets, Check, Loader2 } from "lucide-react"
 import { useCartStore } from "@/store/cartStore"
+import { useWishlistStore } from "@/store/wishlistStore"
+import { useAuthStore } from "@/store/authStore"
+import ProductReviews from "@/components/ProductReviews"
 
 export default function ProductPage() {
     const params = useParams()
@@ -15,23 +18,36 @@ export default function ProductPage() {
     const addItem = useCartStore((state) => state.addItem)
 
     const [product, setProduct] = useState<any>(null)
+    const [reviewsData, setReviewsData] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
     const [quantity, setQuantity] = useState(1)
     const [addedToCart, setAddedToCart] = useState(false)
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const res = await api.get(`/products/${slug}`)
-                setProduct(res.data)
-            } catch (err) {
-                console.error("Failed to load product", err)
-            } finally {
-                setLoading(false)
+    // Wishlist hookup
+    const { toggleItem, isInWishlist } = useWishlistStore()
+    const { token } = useAuthStore()
+
+    const fetchProductAndReviews = async () => {
+        try {
+            const productRes = await api.get(`/products/${slug}`)
+            const prod = productRes.data
+            setProduct(prod)
+
+            // Once we have product ID, fetch reviews
+            if (prod && prod.id) {
+                const reviewsRes = await api.get(`/reviews/${prod.id}`)
+                setReviewsData(reviewsRes.data)
             }
+        } catch (err) {
+            console.error("Failed to load product or reviews", err)
+        } finally {
+            setLoading(false)
         }
-        if (slug) fetchProduct()
+    }
+
+    useEffect(() => {
+        if (slug) fetchProductAndReviews()
     }, [slug])
 
     if (loading) {
@@ -51,9 +67,8 @@ export default function ProductPage() {
         )
     }
 
-    // Temporarily mocking rating data until we hook up the reviews table
-    const rating = 4.8;
-    const reviewsCount = 124;
+    const rating = reviewsData?.averageRating || 0;
+    const reviewsCount = reviewsData?.totalReviews || 0;
     const discountPrice = parseFloat(product.discount_price);
     const regularPrice = parseFloat(product.price);
     const activePrice = discountPrice && discountPrice < regularPrice ? discountPrice : regularPrice;
@@ -119,8 +134,19 @@ export default function ProductPage() {
                                     -{discountPercent}%
                                 </span>
                             )}
-                            <button aria-label="Add to wishlist" className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white hover:scale-110 transition-all">
-                                <Heart className="h-5 w-5 text-[var(--rose-gold)]" />
+                            <button
+                                onClick={() => {
+                                    if (!token) {
+                                        router.push('/login?redirect=' + encodeURIComponent(window.location.pathname))
+                                        return
+                                    }
+                                    toggleItem(product.id)
+                                }}
+                                aria-label="Toggle wishlist"
+                                className={`absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-all shadow-sm
+                                    ${isInWishlist(product.id) ? 'bg-white/90 text-red-500' : 'bg-white/80 text-[var(--rose-gold)] hover:bg-white'}`}
+                            >
+                                <Heart className="h-5 w-5" fill={isInWishlist(product.id) ? "currentColor" : "none"} />
                             </button>
                         </div>
                         <div className="grid grid-cols-4 gap-3">
@@ -246,46 +272,14 @@ export default function ProductPage() {
                     </div>
                 </div>
 
-                {/* Customer Reviews UI Skeleton */}
-                <div className="mt-20 pt-10 border-t border-[var(--border)]">
-                    <h2 className="text-2xl font-bold mb-8">Customer Reviews</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Summary Col */}
-                        <div className="bg-[var(--soft-gray)] p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-2">
-                            <span className="text-5xl font-bold">{rating}</span>
-                            <div className="flex items-center gap-1">
-                                {[1, 2, 3, 4, 5].map((i) => (
-                                    <Star key={i} className={`h-5 w-5 ${i <= Math.round(rating) ? 'fill-[var(--rose-gold)] text-[var(--rose-gold)]' : 'text-[var(--border)]'}`} />
-                                ))}
-                            </div>
-                            <span className="text-sm text-[var(--muted-foreground)] mt-2">Based on {reviewsCount} reviews</span>
-                            <Button variant="outline" className="mt-4 rounded-full w-full border-[var(--rose-gold)] text-[var(--rose-gold)] hover:bg-[var(--rose-gold)]/5">Write a Review</Button>
-                        </div>
-
-                        {/* Sample Reviews */}
-                        <div className="md:col-span-2 space-y-6">
-                            {[1, 2].map((i) => (
-                                <div key={i} className="border-b border-[var(--border)] pb-6 last:border-0 last:pb-0">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-8 h-8 rounded-full bg-[var(--rose-gold)]/20 flex items-center justify-center font-bold text-[var(--rose-gold)] text-xs">AM</div>
-                                            <span className="font-semibold text-sm">Alex M.</span>
-                                            <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full flex items-center gap-1"><Check className="h-3 w-3" /> Verified</span>
-                                        </div>
-                                        <span className="text-xs text-[var(--muted-foreground)]">2 weeks ago</span>
-                                    </div>
-                                    <div className="flex mb-2">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <Star key={star} className="h-3.5 w-3.5 fill-[var(--rose-gold)] text-[var(--rose-gold)]" />
-                                        ))}
-                                    </div>
-                                    <h4 className="font-semibold text-sm mb-1">Absolutely love it!</h4>
-                                    <p className="text-sm text-[var(--muted-foreground)]">I've been using this for a month now and the difference is incredible. It absorbs quickly and doesn't leave any greasy residue. Definitely adding this to my daily routine permanently.</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                {/* Customer Reviews Section */}
+                <ProductReviews
+                    productId={product.id}
+                    reviewsList={reviewsData?.reviews || []}
+                    averageRating={rating}
+                    totalReviews={reviewsCount}
+                    onReviewAdded={fetchProductAndReviews}
+                />
             </div>
         </div>
     )
