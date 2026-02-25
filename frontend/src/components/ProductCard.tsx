@@ -41,9 +41,20 @@ export default function ProductCard({ id, name, price, discountPrice, image, slu
 
     return (
         <Card className="group overflow-hidden border border-[var(--border)] shadow-sm card-hover bg-white rounded-2xl flex flex-col h-full">
-            <div className="relative aspect-square bg-[var(--soft-gray)] flex items-center justify-center overflow-hidden shrink-0">
-                <div className="w-20 h-20 rounded-full bg-white/40 flex items-center justify-center relative z-10 transition-transform duration-500 group-hover:scale-110">
-                    <Droplets className="h-8 w-8 text-[var(--rose-gold)] opacity-50" />
+            <div className="relative aspect-[4/5] bg-[var(--soft-gray)] flex items-center justify-center overflow-hidden shrink-0">
+                {/* Real product image */}
+                <img
+                    src={image}
+                    alt={name}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
+                />
+
+                {/* Hover quick-add overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-end justify-center pb-4">
+                    <Button size="sm" className="rounded-full bg-white/90 text-[#1a1a2e] text-xs font-semibold px-5 py-2 hover:bg-white shadow-lg backdrop-blur-sm transition-all duration-300 translate-y-3 group-hover:translate-y-0" asChild>
+                        <Link href={`/product/${slug}`}>Quick View</Link>
+                    </Button>
                 </div>
 
                 {stock !== undefined && stock <= 5 && stock > 0 && (
@@ -58,7 +69,11 @@ export default function ProductCard({ id, name, price, discountPrice, image, slu
                 )}
 
                 {tag && (
-                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[var(--rose-gold)] text-white text-xs font-semibold z-20 shadow-sm">
+                    <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold z-20 shadow-sm ${tag === 'Best Seller' ? 'bg-[#5C3D0E] text-white' :
+                            tag === 'New' ? 'bg-emerald-600 text-white' :
+                                tag === 'Popular' ? 'bg-[#8B6120] text-white' :
+                                    'bg-[var(--rose-gold)] text-white'
+                        }`}>
                         {tag}
                     </span>
                 )}
@@ -76,7 +91,7 @@ export default function ProductCard({ id, name, price, discountPrice, image, slu
                 </button>
             </div>
 
-            <CardHeader className="p-4 pb-1">
+            <CardHeader className="px-3 pt-3 pb-1">
                 {(rating !== undefined && reviews !== undefined) && (
                     <div className="flex items-center gap-1 mb-1">
                         {[1, 2, 3, 4, 5].map((i) => (
@@ -85,11 +100,11 @@ export default function ProductCard({ id, name, price, discountPrice, image, slu
                         <span className="text-xs text-[var(--muted-foreground)] ml-1">({reviews})</span>
                     </div>
                 )}
-                <CardTitle className="text-base font-semibold line-clamp-1" title={name}>{name}</CardTitle>
+                <CardTitle className="text-sm font-semibold line-clamp-1" title={name}>{name}</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 pt-0 grow">
+            <CardContent className="px-3 pt-0 pb-3 grow">
                 <div className="flex items-baseline gap-2">
-                    <p className="text-lg font-bold text-[var(--foreground)]">
+                    <p className="text-xl font-extrabold text-[var(--foreground)]">
                         ${discountPrice ? discountPrice.toFixed(2) : price.toFixed(2)}
                     </p>
                     {discountPrice && (
@@ -99,8 +114,8 @@ export default function ProductCard({ id, name, price, discountPrice, image, slu
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="p-4 pt-0 mt-auto">
-                <Button className="w-full rounded-full gradient-primary text-white btn-shimmer" asChild>
+            <CardFooter className="px-3 pb-3 pt-0 mt-auto">
+                <Button variant="outline" size="sm" className="w-full rounded-full text-xs font-medium border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--soft-gray)]" asChild>
                     <Link href={`/product/${slug}`}>View Details</Link>
                 </Button>
             </CardFooter>

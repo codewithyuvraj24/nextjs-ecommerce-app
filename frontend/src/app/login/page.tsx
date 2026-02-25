@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import api from "@/lib/api"
-import { Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
@@ -36,28 +36,25 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-[85vh] flex">
-            {/* Left - Form */}
-            <div className="flex-1 flex items-center justify-center px-4 py-12">
-                <div className="w-full max-w-md space-y-8 animate-fade-in-up">
-                    <div className="text-center">
-                        <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4">
-                            <Sparkles className="h-7 w-7 text-white" />
-                        </div>
-                        <h1 className="text-3xl font-bold tracking-tight">Welcome Back</h1>
-                        <p className="text-sm text-[var(--muted-foreground)] mt-2">Sign in to access your account and orders</p>
+        <div className="min-h-[calc(100vh-72px)] flex">
+            {/* Left — Form */}
+            <div className="flex-1 flex items-center justify-center px-6 lg:px-16">
+                <div className="w-full max-w-sm">
+                    <div className="mb-8">
+                        <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">Welcome back</h1>
+                        <p className="text-sm text-[var(--muted-foreground)] mt-1">Sign in to your account</p>
                     </div>
 
                     {error && (
-                        <div className="bg-red-50 text-red-600 text-sm text-center px-4 py-3 rounded-xl animate-scale-in">
+                        <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg mb-5">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="space-y-1.5">
-                            <label htmlFor="email" className="text-sm font-medium">Email</label>
-                            <div className="relative">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label htmlFor="email" className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider">Email</label>
+                            <div className="relative mt-1.5">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
                                 <Input
                                     id="email"
@@ -65,18 +62,18 @@ export default function LoginPage() {
                                     placeholder="you@example.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="pl-10 rounded-xl h-11 border-[var(--border)] focus:border-[var(--rose-gold)] focus:ring-[var(--rose-gold)]"
+                                    className="pl-10 h-11 rounded-lg border-[var(--border)] bg-white focus:border-[#b8893c] focus:ring-[#b8893c]/20"
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div>
                             <div className="flex justify-between items-center">
-                                <label htmlFor="password" className="text-sm font-medium">Password</label>
-                                <a href="#" className="text-xs text-[var(--rose-gold)] hover:text-[var(--rose-gold-dark)] transition-colors">Forgot password?</a>
+                                <label htmlFor="password" className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wider">Password</label>
+                                <a href="#" className="text-xs text-[#b8893c] hover:text-[#96702e] transition-colors">Forgot?</a>
                             </div>
-                            <div className="relative">
+                            <div className="relative mt-1.5">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
                                 <Input
                                     id="password"
@@ -84,7 +81,7 @@ export default function LoginPage() {
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-10 pr-10 rounded-xl h-11 border-[var(--border)] focus:border-[var(--rose-gold)] focus:ring-[var(--rose-gold)]"
+                                    className="pl-10 pr-10 h-11 rounded-lg border-[var(--border)] bg-white focus:border-[#b8893c] focus:ring-[#b8893c]/20"
                                     required
                                 />
                                 <button
@@ -99,43 +96,35 @@ export default function LoginPage() {
 
                         <Button
                             type="submit"
-                            className="w-full rounded-full gradient-primary text-white py-5 text-base btn-shimmer"
-                            size="lg"
+                            className="w-full h-11 rounded-lg bg-[#1f1a17] text-white text-sm font-medium hover:bg-[#2a2320] transition-colors"
                             disabled={loading}
                         >
                             {loading ? "Signing in..." : "Sign In"}
                         </Button>
                     </form>
 
-                    <div className="text-center text-sm text-[var(--muted-foreground)]">
+                    <p className="text-sm text-[var(--muted-foreground)] mt-6 text-center">
                         Don&apos;t have an account?{" "}
-                        <Link href="/register" className="text-[var(--rose-gold)] font-medium hover:text-[var(--rose-gold-dark)] transition-colors">
-                            Create account
+                        <Link href="/register" className="text-[#b8893c] font-medium hover:text-[#96702e] transition-colors">
+                            Create one
                         </Link>
-                    </div>
+                    </p>
                 </div>
             </div>
 
-            {/* Right - Decorative Panel */}
-            <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden">
-                <div className="absolute inset-0 gradient-hero animate-gradient" />
-                <div className="absolute inset-0 flex items-center justify-center p-12">
-                    <div className="text-center text-white space-y-6 max-w-sm animate-fade-in">
-                        <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto">
-                            <Sparkles className="h-10 w-10" />
-                        </div>
-                        <h2 className="text-3xl font-bold">Your Beauty Journey Awaits</h2>
-                        <p className="text-white/70 leading-relaxed">
-                            Access your personalized recommendations, track orders, and unlock exclusive member benefits.
-                        </p>
-                        <div className="flex items-center justify-center gap-4 pt-4">
-                            {["10K+ Customers", "Premium Quality", "Free Returns"].map((item) => (
-                                <span key={item} className="text-xs bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                                    {item}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
+            {/* Right — Editorial photo */}
+            <div className="hidden lg:block lg:w-[48%] relative">
+                <img
+                    src="https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=900&h=1200&fit=crop&crop=center"
+                    alt="Skincare products"
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+                <div className="absolute bottom-12 left-10 right-10">
+                    <p className="text-white/70 text-xs uppercase tracking-widest mb-2">Glow & Co.</p>
+                    <p className="text-white text-xl font-medium leading-snug max-w-xs">
+                        Simple routines, visible results.
+                    </p>
                 </div>
             </div>
         </div>

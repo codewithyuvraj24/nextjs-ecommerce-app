@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api', // Env variable in production
+    baseURL: 'http://127.0.0.1:5000/api', // Env variable in production
     headers: {
         'Content-Type': 'application/json',
     },
