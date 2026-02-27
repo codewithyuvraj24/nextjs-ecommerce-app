@@ -40,39 +40,39 @@ Small-to-medium beauty brands often rely on generic marketplace platforms (Amazo
 ┌─────────────────────────────────────────────────────────────────┐
 │                          CLIENT                                 │
 │                                                                 │
-│  Next.js 16 (React 19)        Zustand Stores                   │
+│  Next.js 16 (React 19)        Zustand Stores                    │
 │  ┌──────────────────┐         ┌──────────────┐                  │
-│  │  Pages (SSR/CSR)  │◄───────│  Auth Store   │                 │
-│  │  ─────────────── │         │  Cart Store   │                 │
-│  │  Home             │         │  Wishlist     │                 │
-│  │  Products         │         └──────────────┘                  │
+│  │  Pages (SSR/CSR)  │◄───────│  Auth Store  │                 │
+│  │  ───────────────  │         │  Cart Store  │                 │
+│  │  Home             │         │  Wishlist    │                 │
+│  │  Products         │         └──────────────┘                 │
 │  │  Product Detail   │                                          │
 │  │  Cart / Checkout  │         Axios HTTP Client                │
-│  │  Auth (Login/Reg) │         ┌──────────────┐                  │
-│  │  Dashboard        │────────►│  GET / POST   │                 │
-│  │  Wishlist         │         │  PUT / DELETE  │                │
-│  │  Admin Panel      │         └───────┬───────┘                 │
-│  └──────────────────┘                  │                         │
+│  │  Auth (Login/Reg) │         ┌──────────────┐                 │
+│  │  Dashboard        │────────►│  GET / POST   │                │
+│  │  Wishlist         │         │  PUT / DELETE │                │
+│  │  Admin Panel      │         └───────┬───────┘                │
+│  └──────────────────┘                  │                        │
 └────────────────────────────────────────┼─────────────────────────┘
                                          │ HTTP :5000
 ┌────────────────────────────────────────┼─────────────────────────┐
 │                          SERVER        │                         │
 │                                        ▼                         │
-│  Express 5               ┌──────────────────────┐               │
+│  Express 5               ┌──────────────────────┐                │
 │  ┌───────────────┐       │     Middleware        │               │
 │  │   Routes       │       │  ──────────────────  │               │
-│  │  ────────────  │       │  JWT Auth             │               │
+│  │  ────────────  │       │  JWT Auth            │               │
 │  │  /auth         │◄─────│  Helmet (Security)    │               │
-│  │  /products     │       │  CORS                 │               │
-│  │  /orders       │       │  Rate Limiter         │               │
-│  │  /reviews      │       │  Input Validation     │               │
+│  │  /products     │       │  CORS                │               │
+│  │  /orders       │       │  Rate Limiter        │               │
+│  │  /reviews      │       │  Input Validation    │               │
 │  │  /wishlist     │       └──────────────────────┘               │
 │  │  /payments     │                                              │
 │  │  /logistics    │       ┌──────────────────────┐               │
 │  └───────┬───────┘       │     Services          │               │
 │          │                │  ──────────────────  │               │
-│          ▼                │  Razorpay Payment     │               │
-│  ┌───────────────┐       └──────────────────────┘               │
+│          ▼                │  Razorpay Payment    │               │
+│  ┌───────────────┐       └──────────────────────┘                │ 
 │  │  Controllers   │                                              │
 │  │  → Models      │───────► PostgreSQL                           │
 │  └───────────────┘                                               │
