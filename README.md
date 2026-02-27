@@ -62,14 +62,14 @@ Small-to-medium beauty brands often rely on generic marketplace platforms (Amazo
 │  ┌───────────────┐       │     Middleware        │               │
 │  │   Routes       │       │  ──────────────────  │               │
 │  │  ────────────  │       │  JWT Auth            │               │
-│  │  /auth         │◄─────│  Helmet (Security)    │               │
+│  │  /auth         │◄───── │  Helmet (Security)   │               │
 │  │  /products     │       │  CORS                │               │
 │  │  /orders       │       │  Rate Limiter        │               │
 │  │  /reviews      │       │  Input Validation    │               │
 │  │  /wishlist     │       └──────────────────────┘               │
 │  │  /payments     │                                              │
 │  │  /logistics    │       ┌──────────────────────┐               │
-│  └───────┬───────┘       │     Services          │               │
+│  └───────┬───────┘        │     Services         │               │
 │          │                │  ──────────────────  │               │
 │          ▼                │  Razorpay Payment    │               │
 │  ┌───────────────┐       └──────────────────────┘                │ 
