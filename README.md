@@ -42,7 +42,7 @@ Small-to-medium beauty brands often rely on generic marketplace platforms (Amazo
 │                                                                 │
 │  Next.js 16 (React 19)        Zustand Stores                    │
 │  ┌──────────────────┐         ┌──────────────┐                  │
-│  │  Pages (SSR/CSR)  │◄───────│  Auth Store  │                 │
+│  │  Pages (SSR/CSR)  │◄───────│  Auth Store  │                  │
 │  │  ───────────────  │         │  Cart Store  │                 │
 │  │  Home             │         │  Wishlist    │                 │
 │  │  Products         │         └──────────────┘                 │
