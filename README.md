@@ -42,16 +42,16 @@ Small-to-medium beauty brands often rely on generic marketplace platforms (Amazo
 │                                                                 │
 │  Next.js 16 (React 19)        Zustand Stores                    │
 │  ┌──────────────────┐         ┌──────────────┐                  │
-│  │  Pages (SSR/CSR)  │◄───────│  Auth Store  │                  │
-│  │  ───────────────  │         │  Cart Store  │                 │
-│  │  Home             │         │  Wishlist    │                 │
-│  │  Products         │         └──────────────┘                 │
-│  │  Product Detail   │                                          │
-│  │  Cart / Checkout  │         Axios HTTP Client                │
-│  │  Auth (Login/Reg) │         ┌──────────────┐                 │
-│  │  Dashboard        │────────►│  GET / POST   │                │
-│  │  Wishlist         │         │  PUT / DELETE │                │
-│  │  Admin Panel      │         └───────┬───────┘                │
+│  │  Pages (SSR/CSR) │◄─────── │  Auth Store  │                  │
+│  │  ─────────────── │         │  Cart Store  │                  │
+│  │  Home            │         │  Wishlist    │                  │
+│  │  Products        │         └──────────────┘                  │
+│  │  Product Detail  │                                           │
+│  │  Cart / Checkout │         Axios HTTP Client                 │
+│  │  Auth (Login/Reg)│          ┌──────────────┐                 │
+│  │  Dashboard       │────────► │  GET / POST   │                │
+│  │  Wishlist        │          │  PUT / DELETE │                │
+│  │  Admin Panel     │          └───────┬───────┘                │
 │  └──────────────────┘                  │                        │
 └────────────────────────────────────────┼─────────────────────────┘
                                          │ HTTP :5000
@@ -59,22 +59,22 @@ Small-to-medium beauty brands often rely on generic marketplace platforms (Amazo
 │                          SERVER        │                         │
 │                                        ▼                         │
 │  Express 5               ┌──────────────────────┐                │
-│  ┌───────────────┐       │     Middleware        │               │
-│  │   Routes       │       │  ──────────────────  │               │
-│  │  ────────────  │       │  JWT Auth            │               │
-│  │  /auth         │◄───── │  Helmet (Security)   │               │
-│  │  /products     │       │  CORS                │               │
-│  │  /orders       │       │  Rate Limiter        │               │
-│  │  /reviews      │       │  Input Validation    │               │
-│  │  /wishlist     │       └──────────────────────┘               │
-│  │  /payments     │                                              │
-│  │  /logistics    │       ┌──────────────────────┐               │
+│  ┌───────────────┐       │     Middleware       │                │
+│  │   Routes      │       │  ──────────────────  │                │
+│  │  ──────────── │       │  JWT Auth            │                │
+│  │  /auth        │◄───── │  Helmet (Security)   │                │
+│  │  /products    │       │  CORS                │                │
+│  │  /orders      │       │  Rate Limiter        │                │
+│  │  /reviews     │       │  Input Validation    │                │
+│  │  /wishlist    │       └──────────────────────┘                │
+│  │  /payments    │                                               │
+│  │  /logistics   │        ┌──────────────────────┐               │
 │  └───────┬───────┘        │     Services         │               │
 │          │                │  ──────────────────  │               │
 │          ▼                │  Razorpay Payment    │               │
-│  ┌───────────────┐       └──────────────────────┘                │ 
-│  │  Controllers   │                                              │
-│  │  → Models      │───────► PostgreSQL                           │
+│  ┌───────────────┐        └──────────────────────┘               │ 
+│  │  Controllers  │                                               │
+│  │  → Models     │───────► PostgreSQL                            │
 │  └───────────────┘                                               │
 └─────────────────────────────────────────────────────────────────┘
 ```
