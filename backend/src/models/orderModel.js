@@ -33,6 +33,23 @@ const createOrder = async (userId, totalAmount, shippingAddress, items, status =
     }
 };
 
+const getOrderById = async (id) => {
+    const query = `
+    SELECT 
+      o.*, 
+      json_agg(oi.*) AS items,
+      u.name AS user_name,
+      u.email AS user_email
+    FROM orders o
+    LEFT JOIN order_items oi ON o.id = oi.order_id
+    LEFT JOIN users u ON o.user_id = u.id
+    WHERE o.id = $1
+    GROUP BY o.id, u.name, u.email;
+  `;
+    const result = await pool.query(query, [id]);
+    return result.rows[0] || null;
+};
+
 const getOrdersByUser = async (userId) => {
     const query = `
     SELECT o.*, json_agg(oi.*) as items
@@ -82,6 +99,7 @@ const updateOrderStatus = async (id, status, paymentId = null, trackingId = null
 
 module.exports = {
     createOrder,
+    getOrderById,
     getOrdersByUser,
     getAllOrders,
     updateOrderStatus,

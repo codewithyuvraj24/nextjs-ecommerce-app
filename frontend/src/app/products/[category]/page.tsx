@@ -46,7 +46,7 @@ export default function CategoryPage() {
     }, [category, sort, minPrice, maxPrice])
 
     const handlePriceFilter = (min?: number, max?: number) => {
-        if (minPrice === min && maxPrice === max) {
+        if (String(minPrice) === String(min) && String(maxPrice) === String(max)) {
             setMinPrice(undefined)
             setMaxPrice(undefined)
         } else {

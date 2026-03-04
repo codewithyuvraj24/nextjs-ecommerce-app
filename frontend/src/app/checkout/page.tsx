@@ -79,14 +79,14 @@ export default function CheckoutPage() {
             const orderItems = items.map(i => ({ product_id: i.id, product_name: i.name, quantity: i.quantity, price: i.price }))
 
             if (paymentMethod === "cod") {
-                await api.post("/orders", {
+                const { data: codOrder } = await api.post("/orders", {
                     totalAmount: totalAmt,
                     shippingAddress: address,
                     status: "pending",
                     items: orderItems
                 });
                 clearCart();
-                router.push(`/checkout/success`);
+                router.push(`/checkout/success?type=cod&orderId=${codOrder.id || ''}`);
             } else {
                 // Online Payment Flow
                 // 1. Create order on backend
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
                             });
 
                             clearCart();
-                            router.push(`/checkout/success`);
+                            router.push(`/checkout/success?type=online&orderId=${response.razorpay_order_id || ''}`);
                         } catch (err) {
                             console.error("Payment verification failed", err);
                             alert("Payment verification failed. Please contact support.");

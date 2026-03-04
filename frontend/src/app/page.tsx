@@ -4,10 +4,10 @@ import { ArrowRight } from "lucide-react"
 import ProductCard from "@/components/ProductCard"
 
 const FEATURED_PRODUCTS = [
-  { id: 1, name: "Radiance Serum", price: 29.99, tag: "Best Seller", rating: 4.8, reviews: 124, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&h=750&fit=crop" },
-  { id: 2, name: "Hydrating Cleanser", price: 19.99, tag: "New", rating: 4.6, reviews: 89, image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&h=750&fit=crop" },
-  { id: 3, name: "Night Cream", price: 34.99, tag: null, rating: 4.9, reviews: 203, image: "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=600&h=750&fit=crop" },
-  { id: 4, name: "Vitamin C Tonic", price: 24.99, tag: "Popular", rating: 4.7, reviews: 156, image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&h=750&fit=crop" },
+  { id: 1, name: "Radiance Serum", slug: "radiance-serum", price: 29.99, tag: "Best Seller", rating: 4.8, reviews: 124, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&h=750&fit=crop" },
+  { id: 2, name: "Hydrating Cleanser", slug: "hydrating-cleanser", price: 19.99, tag: "New", rating: 4.6, reviews: 89, image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&h=750&fit=crop" },
+  { id: 3, name: "Night Time Moisturizer", slug: "night-time-moisturizer", price: 34.99, tag: null, rating: 4.9, reviews: 203, image: "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=600&h=750&fit=crop" },
+  { id: 4, name: "Vitamin C Cream", slug: "vitamin-c-cream", price: 24.99, tag: "Popular", rating: 4.7, reviews: 156, image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&h=750&fit=crop" },
 ]
 
 export default function Home() {
@@ -114,7 +114,7 @@ export default function Home() {
                 name={product.name}
                 price={product.price}
                 image={product.image}
-                slug={`product-${product.id}`}
+                slug={product.slug}
                 rating={product.rating}
                 reviews={product.reviews}
                 tag={product.tag || undefined}

@@ -19,30 +19,40 @@ const login = async () => {
 const createShipment = async (order) => {
     if (!token) await login();
 
+    const address = order.shipping_address || {};
+    const items = Array.isArray(order.items) ? order.items : [];
+
     const shipmentData = {
         order_id: order.id,
-        order_date: new Date().toISOString(),
-        pickup_location: 'Primary', // Needs to be configured in Shiprocket dashboard
-        billing_customer_name: order.shipping_address.name || 'Customer', // Extract from address JSON
+        order_date: order.created_at || new Date().toISOString(),
+        pickup_location: process.env.SHIPROCKET_PICKUP_LOCATION || 'Primary',
+        billing_customer_name: (order.user && order.user.name) || order.user_name || 'Customer',
         billing_last_name: '',
-        billing_address: order.shipping_address.street,
-        billing_city: order.shipping_address.city,
-        billing_pincode: order.shipping_address.zip,
-        billing_state: order.shipping_address.state,
-        billing_country: order.shipping_address.country,
-        billing_email: 'customer@example.com', // Need user email
-        billing_phone: '9999999999', // Need phone
+        billing_address: address.street,
+        billing_city: address.city,
+        billing_pincode: address.zip,
+        billing_state: address.state,
+        billing_country: address.country || 'India',
+        billing_email: (order.user && order.user.email) || order.user_email || 'customer@example.com',
+        billing_phone: process.env.SHIPROCKET_DEFAULT_PHONE || '9999999999',
         shipping_is_billing: true,
-        order_items: [
-            {
-                name: 'Product Name', // Need from order items details
-                sku: 'sku123',
-                units: 1,
-                selling_price: order.total_amount,
-            },
-        ],
-        payment_method: 'Prepaid',
-        sub_total: order.total_amount,
+        order_items: items.length
+            ? items.map((item) => ({
+                  name: item.product_name || 'Item',
+                  sku: item.product_id || item.product_name || 'SKU',
+                  units: item.quantity || 1,
+                  selling_price: Number(item.price) || Number(order.total_amount) || 0,
+              }))
+            : [
+                  {
+                      name: 'Item',
+                      sku: 'SKU',
+                      units: 1,
+                      selling_price: Number(order.total_amount) || 0,
+                  },
+              ],
+        payment_method: order.status === 'paid' ? 'Prepaid' : 'COD',
+        sub_total: Number(order.total_amount) || 0,
         length: 10,
         breadth: 10,
         height: 10,

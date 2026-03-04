@@ -5,7 +5,7 @@ import api from "@/lib/api"
 import { useAuthStore } from "@/store/authStore"
 import { useRouter } from "next/navigation"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Package, Calendar, ChevronRight, ShoppingBag, Sparkles, User } from "lucide-react"
+import { Package, Calendar, ChevronRight, ShoppingBag, Sparkles, User, LogOut } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -74,16 +74,29 @@ export default function DashboardPage() {
         <div className="min-h-screen bg-[var(--background)]">
             <div className="container mx-auto px-4 lg:px-8 py-8 md:py-12">
                 {/* Welcome Header */}
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center">
-                        <User className="h-7 w-7 text-white" />
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center">
+                            <User className="h-7 w-7 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold">
+                                Welcome{user?.name ? `, ${user.name}` : " back"}!
+                            </h1>
+                            <p className="text-[var(--muted-foreground)]">Here&apos;s an overview of your orders</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-bold">
-                            Welcome{user?.name ? `, ${user.name}` : " back"}!
-                        </h1>
-                        <p className="text-[var(--muted-foreground)]">Here&apos;s an overview of your orders</p>
-                    </div>
+                    <Button
+                        variant="outline"
+                        className="rounded-full border-[var(--border)] text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
+                        onClick={() => {
+                            useAuthStore.getState().logout()
+                            router.push("/")
+                        }}
+                    >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                    </Button>
                 </div>
 
                 {/* Stats Row */}

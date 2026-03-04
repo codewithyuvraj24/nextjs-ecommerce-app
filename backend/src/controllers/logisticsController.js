@@ -4,30 +4,36 @@ const orderModel = require('../models/orderModel');
 const createShipment = async (req, res) => {
     const { orderId } = req.body;
 
+    if (!orderId) {
+        return res.status(400).json({ message: 'orderId is required' });
+    }
+
     try {
-        // Fetch full order details including items and user
-        // For now using simple update
-        // In real scenario, we need full order data to pass to Shiprocket
+        const order = await orderModel.getOrderById(orderId);
 
-        // Placeholder fetching logic
-        // const order = await orderModel.getOrderById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
 
-        const mockOrder = {
-            id: orderId,
-            total_amount: 1000,
-            shipping_address: {
-                street: '123 Main St',
-                city: 'Delhi',
-                state: 'Delhi',
-                zip: '110001',
-                country: 'India'
-            }
+        // Optional: only allow shipping for paid or pending (COD) orders
+        if (!['paid', 'pending'].includes(order.status)) {
+            return res.status(400).json({ message: `Cannot create shipment for order with status "${order.status}"` });
+        }
+
+        const enrichedOrder = {
+            id: order.id,
+            total_amount: Number(order.total_amount),
+            shipping_address: order.shipping_address,
+            items: order.items || [],
+            user: {
+                name: order.user_name || 'Customer',
+                email: order.user_email || 'customer@example.com',
+            },
         };
 
-        const shipment = await shiprocketService.createShipment(mockOrder);
+        const shipment = await shiprocketService.createShipment(enrichedOrder);
 
-        // Update order with tracking ID
-        await orderModel.updateOrderStatus(orderId, 'shipped', null, shipment.awb_code);
+        await orderModel.updateOrderStatus(orderId, 'shipped', null, shipment.awb_code || null);
 
         res.json({ message: 'Shipment created', shipment });
     } catch (err) {

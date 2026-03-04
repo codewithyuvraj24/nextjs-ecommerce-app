@@ -9,6 +9,7 @@ import { ShoppingCart, Star, Heart, Truck, RotateCcw, ShieldCheck, ChevronRight,
 import { useCartStore } from "@/store/cartStore"
 import { useWishlistStore } from "@/store/wishlistStore"
 import { useAuthStore } from "@/store/authStore"
+import { useToastStore } from "@/store/toastStore"
 import ProductReviews from "@/components/ProductReviews"
 
 export default function ProductPage() {
@@ -85,6 +86,7 @@ export default function ProductPage() {
             slug: slug,
         })
         setAddedToCart(true)
+        useToastStore.getState().addToast(`${product.name} added to cart`, 'success')
         setTimeout(() => setAddedToCart(false), 2000)
     }
 
@@ -140,7 +142,12 @@ export default function ProductPage() {
                                         router.push('/login?redirect=' + encodeURIComponent(window.location.pathname))
                                         return
                                     }
+                                    const wasInWishlist = isInWishlist(product.id)
                                     toggleItem(product.id)
+                                    useToastStore.getState().addToast(
+                                        wasInWishlist ? `${product.name} removed from wishlist` : `${product.name} added to wishlist`,
+                                        wasInWishlist ? 'info' : 'success'
+                                    )
                                 }}
                                 aria-label="Toggle wishlist"
                                 className={`absolute top-4 right-4 w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center hover:scale-110 transition-all shadow-sm

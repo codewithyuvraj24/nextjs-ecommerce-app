@@ -44,7 +44,12 @@ export default function RegisterPage() {
             localStorage.setItem("token", res.data.token)
             router.push("/")
         } catch (err: any) {
-            setError(err.response?.data?.message || "Registration failed")
+            const data = err.response?.data
+            if (data?.errors && Array.isArray(data.errors)) {
+                setError(data.errors.map((e: any) => e.msg).join(". "))
+            } else {
+                setError(data?.message || "Registration failed")
+            }
         } finally {
             setLoading(false)
         }

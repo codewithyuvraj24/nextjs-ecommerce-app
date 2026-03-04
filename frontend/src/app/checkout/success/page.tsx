@@ -11,6 +11,7 @@ export default function CheckoutSuccessPage() {
     const router = useRouter()
     const [mounted, setMounted] = useState(false)
     const type = searchParams.get('type')
+    const urlOrderId = searchParams.get('orderId')
 
     useEffect(() => {
         setMounted(true)
@@ -19,7 +20,7 @@ export default function CheckoutSuccessPage() {
     if (!mounted) return null
 
     // Simple pseudo-random order ID since we don't pass the exact DB ID back in the basic flow
-    const orderId = `ORD-${Math.floor(100000 + Math.random() * 900000)}`
+    const orderId = urlOrderId || `ORD-${Math.floor(100000 + Math.random() * 900000)}`
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-4 bg-[var(--soft-gray)] animate-fade-in">
@@ -34,7 +35,7 @@ export default function CheckoutSuccessPage() {
                     </div>
 
                     <h1 className="text-3xl font-playfair font-bold text-[var(--foreground)]">
-                        Payment Successful!
+                        {type === 'cod' ? 'Order Placed!' : 'Payment Successful!'}
                     </h1>
 
                     <p className="text-[var(--muted-foreground)]">
